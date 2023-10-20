@@ -64,11 +64,11 @@ python glaze_pur.py --clean_data_dir=[exp_data_dir]/${artist}/clean/train/ \
                     --pur_para=${pur_para}
 ```
 Below is the explanation of input hyperparameters:
-* ```pur_eps```: Hyperparameter p in our Impress method, can be considered as a perturbation budget, default is 0.05.
+* ```pur_eps```: Hyperparameter p in our Impress method, can be considered as a perturbation budget, default is 0.1.
 * ```pur_lr```: The learning rate used in our Impress method, default is 0.01.
 * ```pur_iters```: The number of iterations in our Impress method, default is 3000.
-* ```pur_alpha```: Hyperparameter \( \alpha \) in our Impress method, used to balance the two loss items, default is 30.
-* ```pur_noise```: The intensity of the Gaussian noise initially added to the images in our Impress method, default is 30.
+* ```pur_alpha```: Hyperparameter \( \alpha \) in our Impress method, used to balance the two loss items, default is 0.1.
+* ```pur_noise```: The intensity of the Gaussian noise initially added to the images in our Impress method, default is 0.1.
 * ```adv_para```: Hyperparameters used in executing Glaze, used for establishing storage directories. Format is ```"adv_p${glaze_p}_alpha${glaze_alpha}_iter${glaze_iters}_lr${glaze_lr}"```
 * ```pur_para```: Hyperparameters used in executing Impress, used for establishing storage directories. Format is ```"pur_eps${pur_eps}-iters${pur_iters}-lr${pur_lr}-pur_alpha${pur_alpha}-noise${pur_noise}"```
 
