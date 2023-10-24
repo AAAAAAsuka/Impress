@@ -148,8 +148,7 @@ python pg_mask_diff_helen.py \
         --attack_type=$attack_type \
         --pg_eps=$pg_eps \
         --pg_step_size=$pg_step_size \
-        --pg_iters=$pg_iters \
-        --device="cuda:0"
+        --pg_iters=$pg_iters 
 ```
 Below is an explanation of the input hyperparameters:
 * ```attack_type```: The perturbation constraint method to be used in the Photoguard method, can be ```l2``` or ```linf```, default is ```l2```.
