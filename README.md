@@ -159,7 +159,7 @@ Below is an explanation of the input hyperparameters:
 ### Execute Impress
 For data protected by Glaze, to use Impress to remove protective noise, please execute the following code:
 ```bash
-python pg_generate.py \
+python pg_mask_pur_helen.py \
         --attack_type=$attack_type \
         --pg_eps=$pg_eps \
         --pg_step_size=$pg_step_size \
@@ -168,8 +168,7 @@ python pg_generate.py \
         --pur_eps=$pur_eps \
         --pur_iters=$pur_iters \
         --pur_lr=$pur_lr \
-        --pur_alpha=$pur_alpha \
-        --pur_noise=$pur_noise 
+        --pur_alpha=$pur_alpha 
 ```
 Below is an explanation of the input hyperparameters:
 * ```pur_eps```: The hyperparameter p in our Impress method, which can be regarded as a perturbation budget, default is 0.1.
@@ -192,7 +191,6 @@ python pg_generate.py \
         --pur_iters=$pur_iters \
         --pur_lr=$pur_lr \
         --pur_alpha=$pur_alpha \
-        --pur_noise=$pur_noise \
         --prompt="${prompt}"
 ```
 Where ```prompt``` represents the content of the images generated after editing, default is "a person in an airplane", and the meanings of the other hyperparameters remain the same as previously described.
@@ -209,7 +207,6 @@ python pg_metric.py \
         --pur_iters=$pur_iters \
         --pur_lr=$pur_lr \
         --pur_alpha=$pur_alpha \
-        --pur_noise=$pur_noise \
         --prompt="${prompt}"
 ```
 The meanings of all hyperparameters remain the same as previously described.
