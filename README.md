@@ -181,7 +181,6 @@ Below is an explanation of the input hyperparameters:
 
 ```attack_type```, ```pg_eps```, ```pg_step_size```, and ```pg_iters``` have the same meanings as when adding protective noise.
 
-## Photoguard
 ### Editing Images using Stable Diffusion
 To attempt editing the original images, images protected by Photoguard, and images purified by Impress, please execute:
 ```bash
