@@ -28,8 +28,6 @@ def main(args):
     for name, param in pipe_inpaint.vae.named_parameters():
         param.requires_grad = False
 
-    prompt = ""
-
     torch.manual_seed(args.manual_seed)
 
 
@@ -38,20 +36,21 @@ def main(args):
     os.makedirs(save_dir_pur, exist_ok=True)
 
     file_dir_list = sorted(os.listdir(adv_dir))
-    if len(file_dir_list) % 4 == 0:
-        parallel_cut_step_size = len(file_dir_list) // 4
-    else:
-        parallel_cut_step_size = len(file_dir_list) // 4 + 1
+    if args.parallel_index >= 0:
+        if len(file_dir_list) % 4 == 0:
+            parallel_cut_step_size = len(file_dir_list) // 4
+        else:
+            parallel_cut_step_size = len(file_dir_list) // 4 + 1
 
-    begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
-    file_dir_list = file_dir_list[begin_index: end_index]
+        begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
+        file_dir_list = file_dir_list[begin_index: end_index]
+    else:
+        pass
 
     image_file_names = [os.path.basename(path)[:-4] for path in file_dir_list]
 
     for i, image_name in enumerate(image_file_names):
-        # if os.path.exists(f"{save_dir_pur}/{image_name}.png"):
-        #     print(f"{image_name} exists, skipping.")
-        #     continue
+
         adv_image = Image.open(os.path.join(adv_dir, image_name + '.png')).convert('RGB').resize((512, 512))
         x_adv = preprocess(adv_image).to(args.device).half()
 
@@ -70,65 +69,6 @@ def main(args):
         purified_image.save(f"{save_dir_pur}/{image_name}.png")
 
 
-
-        # adv_image = Image.open(f'photoguard/assets/trevor_5_adv_image.png').convert('RGB').resize((512, 512))
-        # adv_image = recover_image(adv_image, init_image, mask_image, background=True)
-        #
-        # prompt = "two men in the plane hugging"
-        #
-        #
-        # # Uncomment the below to generated other images
-        # # args.manual_seed = np.random.randint(low=0, high=100000)
-        # print(args.manual_seed)
-        #
-        # torch.manual_seed(args.manual_seed)
-        # strength = 0.7
-        # # guidance_scale = 7.5
-        # guidance_scale = 15
-        # num_inference_steps = 100
-        #
-        # image_nat = pipe_inpaint(prompt=prompt,
-        #                          image=init_image,
-        #                          mask_image=mask_image,
-        #                          eta=1,
-        #                          num_inference_steps=num_inference_steps,
-        #                          guidance_scale=guidance_scale,
-        #                          # strength=strength
-        #                          ).images[0]
-        # image_nat = recover_image(image_nat, init_image, mask_image)
-        #
-        # torch.manual_seed(args.manual_seed)
-        # image_adv = pipe_inpaint(prompt=prompt,
-        #                          image=adv_image,
-        #                          mask_image=mask_image,
-        #                          eta=1,
-        #                          num_inference_steps=num_inference_steps,
-        #                          guidance_scale=guidance_scale,
-        #                          # strength=strength
-        #                          ).images[0]
-        # image_adv = recover_image(image_adv, init_image, mask_image)
-        #
-        # fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(20, 6))
-        #
-        # ax[0].imshow(init_image)
-        # ax[1].imshow(adv_image)
-        # ax[2].imshow(image_nat)
-        # ax[3].imshow(image_adv)
-        #
-        # ax[0].set_title('Source Image', fontsize=16)
-        # ax[1].set_title('Adv Image', fontsize=16)
-        # ax[2].set_title('Gen. Image Nat.', fontsize=16)
-        # ax[3].set_title('Gen. Image Adv.', fontsize=16)
-        #
-        # for i in range(4):
-        #     ax[i].grid(False)
-        #     ax[i].axis('off')
-        #
-        # fig.suptitle(f"{prompt} - {args.manual_seed}", fontsize=20)
-        # fig.tight_layout()
-        # plt.show()
-        # # save image
-        # fig.savefig(f"photoguard/assets/trevor_5_all.png")
 
 
 if __name__ == '__main__':
@@ -149,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('--pg_iters', default=200, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_grad_reps', default=10, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_eta', default=1, type=int, help='pgd Hyperparameters')
-    parser.add_argument('--parallel_index', default=0, type=int, help='pgd Hyperparameters')
+    parser.add_argument('--parallel_index', default=-1, type=int, help='pgd Hyperparameters')
 
     # pur Hyperparameters
     parser.add_argument('--neg_feed', type=float, default=-1.)
@@ -179,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--manual_seed', default=0, type=int, help='manual seed')
 
     # Device options
-    parser.add_argument('--device', default='cuda:3', type=str,
+    parser.add_argument('--device', default='cuda:0', type=str,
                         help='device used for training')
 
     args = parser.parse_args()

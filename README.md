@@ -18,14 +18,15 @@ The generated experimental data will be stored in the ```your_exp_data_dir/${art
 
 For the Photoguard method, the experimental data used can be downloaded through this link.
 
-## Quick Start
+## Glaze
+### Quick Start
 For the Glaze method, to quickly start our experiment, please execute the following command:
 ```bash
 bash scripts/new/test_all.sh
 ```
 Next, we will introduce each step in detail.
 
-## Adding Protective Noise to Images
+### Adding Protective Noise to Images
 For the Glaze method, it is first necessary to generate the style-transferred protected images:
 ```bash
 python style_transfer.py --exp_data_dir=your_exp_data_dir --artist=artist
@@ -49,7 +50,7 @@ Below is the explanation of input hyperparameters:
 
 Photoguard to be completed.
 
-## Execute Impress
+### Execute Impress
 For data protected by Glaze, to use Impress to remove protective noise, execute the following code:
 ```bash
 python glaze_pur.py --clean_data_dir=[exp_data_dir]/${artist}/clean/train/ \
@@ -72,7 +73,7 @@ Below is the explanation of input hyperparameters:
 * ```adv_para```: Hyperparameters used in executing Glaze, used for establishing storage directories. Format is ```"adv_p${glaze_p}_alpha${glaze_alpha}_iter${glaze_iters}_lr${glaze_lr}"```
 * ```pur_para```: Hyperparameters used in executing Impress, used for establishing storage directories. Format is ```"pur_eps${pur_eps}-iters${pur_iters}-lr${pur_lr}-pur_alpha${pur_alpha}-noise${pur_noise}"```
 
-## (Glaze) Finetune Stable Diffusion Model
+### Finetune Stable Diffusion Model
 After generating the initial target images, images protected by Glaze, and images purified by Impress, we need to use these images to finetune the Stable Diffusion model separately:
 ```bash
 accelerate launch train_text_to_image.py \
@@ -93,7 +94,7 @@ accelerate launch train_text_to_image.py \
 ```
 Where, ```TRAIN_DIR``` is the storage path of images used as the finetune dataset. For explanations of other parameters, please see https://huggingface.co/docs/diffusers/v0.13.0/en/training/text2image.
 
-## Using Stable Diffusion to Generate Images
+### Using Stable Diffusion to Generate Images
 For Glaze, we need to use the model finetuned in the previous step to generate images. Please execute:
 ```bash
 python glaze_test.py \
@@ -104,7 +105,7 @@ python glaze_test.py \
     --device=${test_device} 
 ```
 
-## Evaluation
+### Evaluation
 For Glaze, to calculate evaluate metrics, please execute:
 
 ```bash
@@ -117,8 +118,8 @@ python clip_classifier.py \
        --trans_num=24 \
        --manual_seed=0
 
-# diffusion classifier
-  python diffusion-classifier/eval_prob_adaptive.py \
+## diffusion classifier
+python diffusion-classifier/eval_prob_adaptive.py \
        --artist="${artist}" \
        --test_data="${test_data}" \
        --adv_para=${adv_dir} \
@@ -130,3 +131,87 @@ python clip_classifier.py \
 
 ```
 Where, ```adv_para``` and ```pur_para``` are the same as the inputs when executing Impress, ```step``` is the step number when finetuning the model. For the CLIP classifier, ```all_artists``` represents all artists to be tested, required to be entered as a string, and separated by spaces. For the Diffusion classifier, ```test_data``` represents the type of data to be tested, it can be ```clean```, ```adv```, or ```pur```.
+
+## Photoguard
+### Quick Start
+For the Photoguard method, to quickly start our experiment, please execute the following command:
+```bash
+bash scripts/new/pg_mask_diff_test.sh
+```
+
+Next, we will introduce each step in detail.
+
+### Adding Protective Noise to Images
+Protective noise can be added to images using the Photoguard method by executing the following code:
+```bash
+python pg_mask_diff_helen.py \
+        --attack_type=$attack_type \
+        --pg_eps=$pg_eps \
+        --pg_step_size=$pg_step_size \
+        --pg_iters=$pg_iters \
+        --device="cuda:0"
+```
+Below is an explanation of the input hyperparameters:
+* ```attack_type```: The perturbation constraint method to be used in the Photoguard method, can be ```l2``` or ```linf```, default is ```l2```.
+* ```pg_eps```: The hyperparameter \( \epsilon \) in the Photoguard method, representing the maximum perturbation budget, default is 16.
+* ```pg_step_size```: Step size of pgd, default is 1.
+* ```pg_iters```: Number of iterations to execute the Photoguard method, default is 200.
+
+### Execute Impress
+For data protected by Glaze, to use Impress to remove protective noise, please execute the following code:
+```bash
+python pg_generate.py \
+        --attack_type=$attack_type \
+        --pg_eps=$pg_eps \
+        --pg_step_size=$pg_step_size \
+        --pg_iters=$pg_iters \
+        --device="cuda:0" \
+        --pur_eps=$pur_eps \
+        --pur_iters=$pur_iters \
+        --pur_lr=$pur_lr \
+        --pur_alpha=$pur_alpha \
+        --pur_noise=$pur_noise 
+```
+Below is an explanation of the input hyperparameters:
+* ```pur_eps```: The hyperparameter p in our Impress method, which can be regarded as a perturbation budget, default is 0.1.
+* ```pur_lr```: The learning rate used in our Impress method, default is 0.005.
+* ```pur_iters```: The number of iterations of our Impress method, default is 1000.
+* ```pur_alpha```: The hyperparameter \( \alpha \) in our Impress method, used to balance two loss items, default is 0.01.
+* ```pur_noise```: The intensity of the Gaussian noise initially added to the image in our Impress method, default is 0.05.
+
+```attack_type```, ```pg_eps```, ```pg_step_size```, and ```pg_iters``` have the same meanings as when adding protective noise.
+
+## Photoguard
+### Editing Images using Stable Diffusion
+To attempt editing the original images, images protected by Photoguard, and images purified by Impress, please execute:
+```bash
+python pg_generate.py \
+        --attack_type=$attack_type \
+        --pg_eps=$pg_eps \
+        --pg_step_size=$pg_step_size \
+        --pg_iters=$pg_iters \
+        --pur_eps=$pur_eps \
+        --pur_iters=$pur_iters \
+        --pur_lr=$pur_lr \
+        --pur_alpha=$pur_alpha \
+        --pur_noise=$pur_noise \
+        --prompt="${prompt}"
+```
+Where ```prompt``` represents the content of the images generated after editing, default is "a person in an airplane", and the meanings of the other hyperparameters remain the same as previously described.
+
+### Evaluation
+For Photoguard, to calculate test metrics, please execute:
+```bash
+python pg_metric.py \
+        --attack_type=$attack_type \
+        --pg_eps=$pg_eps \
+        --pg_step_size=$pg_step_size \
+        --pg_iters=$pg_iters \
+        --pur_eps=$pur_eps \
+        --pur_iters=$pur_iters \
+        --pur_lr=$pur_lr \
+        --pur_alpha=$pur_alpha \
+        --pur_noise=$pur_noise \
+        --prompt="${prompt}"
+```
+The meanings of all hyperparameters remain the same as previously described.

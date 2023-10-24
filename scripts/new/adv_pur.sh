@@ -11,7 +11,7 @@ for artist in ${artists}; do
                           --lr=${glaze_lr} \
                           --device=${device}
 
-  python glaze_attack.py --clean_data_dir=../wikiart/preprocessed_data/${artist}/clean/train/ \
+  python glaze_pur.py --clean_data_dir=../wikiart/preprocessed_data/${artist}/clean/train/ \
                          --trans_data_dir=../wikiart/preprocessed_data/${artist}/trans/train/transNum${TRANS_NUM}_seed${SEED} \
                          --pur_eps=${pur_eps} \
                          --pur_lr=${pur_lr} \
@@ -19,7 +19,6 @@ for artist in ${artists}; do
                          --pur_alpha=${pur_alpha} \
                          --pur_noise=${pur_noise} \
                          --device=${device} \
-                         --neg_feed=${neg_feed} \
                          --adv_para=${adv_dir} \
                          --pur_para=${pur_dir}
 

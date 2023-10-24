@@ -73,6 +73,7 @@ if __name__ == '__main__':
                         help='training(True) or testing(False)')
     parser.add_argument('--artist', default='claude-monet', type=str,
                         help='stable diffusion weight')
+    parser.add_argument('--exp_data_dir', default="../wikiart/preprocessed_data", type=str)
 
 
     # parser.add_argument('--aim_style', type=str, default='Oil painting by Van Gogh')

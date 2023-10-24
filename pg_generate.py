@@ -17,11 +17,8 @@ import torchvision.transforms as T
 import sys
 from utils import preprocess, recover_image, plot, prepare_mask
 import argparse
-import jsonlines
-from glaze import glaze
 import re
 import copy
-from impress import autoencoder
 topil = T.ToPILImage()
 
 def get_image_after_vae(image, model, device):
@@ -109,14 +106,18 @@ def main(args):
 
 
     # begin_index, end_index = args.parallel_index * 20, (args.parallel_index + 1) * 20
-    file_dir_list = sorted(os.listdir(pur_dir))
-    if len(file_dir_list) % 4 == 0:
-        parallel_cut_step_size = len(file_dir_list) // 4
-    else:
-        parallel_cut_step_size = len(file_dir_list) // 4 + 1
 
-    begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
-    file_dir_list = file_dir_list[begin_index: end_index]
+    file_dir_list = sorted(os.listdir(pur_dir))
+    if args.parallel_index >= 0:
+        if len(file_dir_list) % 4 == 0:
+            parallel_cut_step_size = len(file_dir_list) // 4
+        else:
+            parallel_cut_step_size = len(file_dir_list) // 4 + 1
+
+        begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
+        file_dir_list = file_dir_list[begin_index: end_index]
+    else:
+        pass
 
     # file_dir_list = os.listdir(pur_dir)
     image_file_names = [os.path.basename(path)[:-4] for path in file_dir_list]
@@ -168,10 +169,10 @@ if __name__ == '__main__':
     parser.add_argument('--pg_iters', default=200, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_grad_reps', default=10, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_eta', default=1, type=int, help='pgd Hyperparameters')
-    parser.add_argument('--parallel_index', default=0, type=int, help='pgd Hyperparameters')
+    parser.add_argument('--parallel_index', default=-1, type=int, help='pgd Hyperparameters')
 
     parser.add_argument('--guidance', default=7.5, type=float, help='learning rate.')
-    parser.add_argument('--diff_steps', default=4, type=int, help='learning rate.')
+    parser.add_argument('--diff_steps', default=50, type=int, help='learning rate.')
 
     # pur Hyperparameters
     parser.add_argument('--neg_feed', type=float, default=-1.)
@@ -182,7 +183,7 @@ if __name__ == '__main__':
     parser.add_argument('--pur_noise', default=0.1, type=float, help='ae Hyperparameters')
 
     # stable diffusion Hyperparameters
-    parser.add_argument('--prompt', default="A person on a plane", type=str, help='learning rate.')
+    parser.add_argument('--prompt', default="a person in an airplane", type=str, help='learning rate.')
     parser.add_argument('--test_guidance', default=7.5, type=float, help='learning rate.')
     parser.add_argument('--test_diff_steps', default=100, type=int, help='learning rate.')
 
@@ -201,7 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('--manual_seed', default=0, type=int, help='manual seed')
 
     # Device options
-    parser.add_argument('--device', default='cuda:3', type=str,
+    parser.add_argument('--device', default='cuda:0', type=str,
                         help='device used for training')
 
     args = parser.parse_args()

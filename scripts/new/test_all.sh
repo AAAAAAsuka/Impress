@@ -14,7 +14,6 @@ export pur_lr=0.01
 export pur_iters=3000
 export pur_alpha=0.1
 export pur_noise=0.1
-export neg_feed=-1.0
 
 # diff hyperparameters
 export batch_size=8

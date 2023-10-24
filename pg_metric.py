@@ -1,27 +1,17 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
-from transformers import CLIPProcessor, CLIPModel
 import os
 from PIL import Image, ImageOps
-import requests
-import torch
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import requests
 from tqdm import tqdm
-from io import BytesIO
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, StableDiffusionInpaintPipeline
 import torchvision.transforms as T
 import sys
-from utils import preprocess, recover_image, plot
 import argparse
-import jsonlines
-from glaze import glaze
 import re
 import copy
-from impress import autoencoder
 topil = T.ToPILImage()
 # from ignite.metrics import FID
 from sewar.full_ref import vifp, ssim, psnr
@@ -139,7 +129,7 @@ if __name__ == '__main__':
     parser.add_argument('--manual_seed', default=0, type=int, help='manual seed')
 
     # Device options
-    parser.add_argument('--device', default='cuda:3', type=str,
+    parser.add_argument('--device', default='cuda:0', type=str,
                         help='device used for training')
 
     args = parser.parse_args()

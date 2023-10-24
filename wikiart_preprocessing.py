@@ -19,11 +19,18 @@ torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+parser = argparse.ArgumentParser(description='diffusion attack')
+
+parser.add_argument('--wikiart_dir', default="../wikiart/wikiart/", type=str,)
+parser.add_argument('--exp_data_dir', default="../wikiart/preprocessed_data", type=str)
+args = parser.parse_args()
+
+
 def detect_style_match(artist, true_style_name, model, processor, image_class, file_dir_list_all):
     correct_num = 0
     file_dir_list = sample(file_dir_list_all, 124)
     for j, file_dir in enumerate(file_dir_list):
-        image =  Image.open(f"../wikiart/wikiart/{file_dir}").convert("RGB")
+        image =  Image.open(f"{args.wikiart_dir}/{file_dir}").convert("RGB")
         inputs = processor(text=image_class, images=image, return_tensors="pt", padding=True).to(device)
         outputs = model(**inputs)
         logits_per_image = outputs.logits_per_image  # this is the image-text similarity score
@@ -50,7 +57,7 @@ def data_preprocess(file_dir_list, artist_name_text, output_dir, image_to_text):
         # new_file_name = re.sub('jpg','png',new_file_name)
 
         # load art and preprocess
-        art = Image.open(f"../wikiart/wikiart/{file_dir}").convert("RGB")
+        art = Image.open(f"{args.wikiart_dir}/{file_dir}").convert("RGB")
         new_art_name = image_to_text(art)[0]['generated_text']
         for stop_words in stop_words_list:
             new_art_name = re.sub(stop_words, '', new_art_name)
@@ -76,10 +83,10 @@ def sampling_wikiart_artist(train_num = 24, test_num = 96, artist_num = 10):
 
 
     image_to_text = pipeline("image-to-text", model="nlpconnect/vit-gpt2-image-captioning")
-    os.makedirs('../wikiart/preprocessed_data/', exist_ok=True)
+    os.makedirs(f'{args.exp_data_dir}/', exist_ok=True)
     # [{'generated_text': 'a soccer game with a player jumping to catch the ball '}]
 
-    csv_reader = csv.reader(open("../wikiart/wikiart_csv/artist_class.txt"))
+    csv_reader = csv.reader(open(f"{args.wikiart_dir}_csv/artist_class.txt"))
     artist_name_list, artist_name_prompt_list = [], []
     for row in csv_reader:
         artist_name = re.sub('[0-9]*', '', row[0]).strip(' ').lower()
@@ -93,9 +100,9 @@ def sampling_wikiart_artist(train_num = 24, test_num = 96, artist_num = 10):
     for i in range(len(artist_name_list)):
         print(f'selecting {artist_name_list[i]}')
         file_dir_list_all_style.append({})
-        for curDir, dirs, files in os.walk("../wikiart/wikiart/"):
+        for curDir, dirs, files in os.walk(f"{args.wikiart_dir}/"):
             if len(files) == 0: continue
-            curDir = re.sub('../wikiart/wikiart/', '', curDir)
+            curDir = re.sub(f'{args.wikiart_dir}/', '', curDir)
             file_dir_list_all_style[-1][curDir] = []
             for file in files:
                 if artist_name_list[i] in file:
@@ -161,7 +168,7 @@ def sampling_wikiart_artist(train_num = 24, test_num = 96, artist_num = 10):
 
 
 
-    with jsonlines.open(f'../wikiart/preprocessed_data//style.jsonl', 'w') as writer:
+    with jsonlines.open(f'{args.exp_data_dir}//style.jsonl', 'w') as writer:
         writer.write_all(style_data)
 
 
@@ -180,9 +187,9 @@ def sampling_wikiart_artist(train_num = 24, test_num = 96, artist_num = 10):
         # test_list = sample(file_dir_list, int(sample_num*(1-split)))
         print(f'selected testing arts list: \n {test_list}')
         # meta_data = []
-        output_dir = f'../wikiart/preprocessed_data/{artist_name_list[i]}/clean/train/'
+        output_dir = f'{args.exp_data_dir}/{artist_name_list[i]}/clean/train/'
         data_preprocess(train_list, artist_name_prompt_list[i], output_dir, image_to_text)
-        output_dir = f'../wikiart/preprocessed_data/{artist_name_list[i]}/clean/test/'
+        output_dir = f'{args.exp_data_dir}/{artist_name_list[i]}/clean/test/'
         data_preprocess(test_list, artist_name_prompt_list[i], output_dir, image_to_text)
 
     print(artist_name_list)

@@ -93,7 +93,6 @@ def compute_grad(diff_model, cur_mask, cur_masked_image, prompt, target_image, *
                                **kwargs)
 
     loss = (image_nat - target_image).norm(p=2) + 10 * (cur_masked_image - image_nat).norm(p=2)
-    # todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! added a term to the loss, change the adv dir !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     grad = torch.autograd.grad(loss, [cur_masked_image])[0] * (1 - cur_mask)
 
     return grad, loss.item(), image_nat.data.cpu()
@@ -182,17 +181,20 @@ def main(args):
     target_image = target_image.resize((512, 512))
 
     file_dir_list = sorted(os.listdir(args.clean_dir))
-    if len(file_dir_list) % 4 == 0:
-        parallel_cut_step_size = len(file_dir_list) // 4
-    else:
-        parallel_cut_step_size = len(file_dir_list) // 4 + 1
+    if args.parallel_index >= 0:
+        if len(file_dir_list) % 4 == 0:
+            parallel_cut_step_size = len(file_dir_list) // 4
+        else:
+            parallel_cut_step_size = len(file_dir_list) // 4 + 1
 
-    begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
-    file_dir_list = file_dir_list[begin_index: end_index]
+        begin_index, end_index = args.parallel_index * parallel_cut_step_size, (args.parallel_index + 1) * parallel_cut_step_size
+        file_dir_list = file_dir_list[begin_index: end_index]
+    else:
+        pass
 
     image_file_names = [os.path.basename(path)[:-4] for path in file_dir_list]
 
-    adv_dir = f"../helen_face/adapt_adv_{args.attack_type}_eps{args.pg_eps}_step{args.pg_step_size}_iter{args.pg_iters}grad_reps{args.pg_grad_reps}_eta{args.pg_eta}_diff_steps{args.diff_steps}_guidance{args.guidance}_seed{args.manual_seed}"
+    adv_dir = f"../helen_face/adv_{args.attack_type}_eps{args.pg_eps}_step{args.pg_step_size}_iter{args.pg_iters}grad_reps{args.pg_grad_reps}_eta{args.pg_eta}_diff_steps{args.diff_steps}_guidance{args.guidance}_seed{args.manual_seed}"
     os.makedirs(adv_dir, exist_ok=True)
 
     for i, image_name in enumerate(image_file_names):
@@ -265,7 +267,7 @@ if __name__ == '__main__':
     parser.add_argument('--pg_iters', default=200, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_grad_reps', default=10, type=int, help='pgd Hyperparameters')
     parser.add_argument('--pg_eta', default=1, type=int, help='pgd Hyperparameters')
-    parser.add_argument('--parallel_index', default=0, type=int, help='pgd Hyperparameters')
+    parser.add_argument('--parallel_index', default=-1, type=int, help='pgd Hyperparameters')
 
     # stable diffusion Hyperparameters
     # parser.add_argument('--strength', default=0.5, type=float, help='learning rate.')
@@ -287,7 +289,7 @@ if __name__ == '__main__':
     parser.add_argument('--manual_seed', default=0, type=int, help='manual seed')
 
     # Device options
-    parser.add_argument('--device', default='cuda:3', type=str,
+    parser.add_argument('--device', default='cuda:0', type=str,
                         help='device used for training')
 
     args = parser.parse_args()

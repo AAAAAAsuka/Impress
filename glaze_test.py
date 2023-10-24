@@ -21,7 +21,6 @@ import jsonlines
 from glaze import glaze
 import re
 import copy
-from impress import autoencoder
 
 def main(args):
     # make sure you're logged in with `huggingface-cli login` - check https://github.com/huggingface/diffusers for more details
