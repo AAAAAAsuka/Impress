@@ -1,5 +1,5 @@
 # Impress
-This is the official repository for "[Do Imperceptible Perturbations Really Prevent Unauthorized Data Usage in Diffusion-based Image Generation? (need to add link here)]()", the paper has been accepted by NeurIPS 2023
+This is the official repository for "[IMPRESS: Evaluating the Resilience of Imperceptible Perturbations Against Unauthorized Data Usage in Diffusion-Based  Generative AI (need to add link here)]()", the paper has been accepted by NeurIPS 2023
 
 ## Environment Setup
 First, our code requires the environment listed in ```requirements.txt``` to be installed:
