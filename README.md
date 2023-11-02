@@ -210,3 +210,16 @@ python pg_metric.py \
         --prompt="${prompt}"
 ```
 The meanings of all hyperparameters remain the same as previously described.
+
+# Bibtex
+If these codes have been helpful to you, welcome to cite our paper! The bibtex of our paper is:
+```
+@inproceedings{
+cao2023impress,
+title={IMPRESS: Evaluating the Resilience of Imperceptible Perturbations Against Unauthorized Data Usage in Diffusion-Based Generative AI},
+author={Bochuan Cao, Changjiang Li, Ting Wang, Jinyuan Jia, Bo Li, Jinghui Chen},
+booktitle={The 37th Conference on Neural Information Processing Systems (NeurIPS), New Orleans, Louisiana, USA.},
+year={2023},
+url={https://arxiv.org/abs/2310.19248}
+}
+```
