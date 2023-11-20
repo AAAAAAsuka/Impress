@@ -10,7 +10,7 @@ pip install -r requirements.txt
 ## Generate Experiment Data
 We have conducted experiments with the Glaze and Photoguard methods on subsets of the wikiart dataset and the Helenface dataset respectively. Below is how to generate the protected target images used in the experiment.
 
-For the Glaze method, the [wikiart dataset](https://drive.google.com/file/d/1vTChp3nU5GQeLkPwotrybpUGUXj12BTK/view) needs to be downloaded first. After the dataset is downloaded, generate the experiment data using the following command:
+For the Glaze method, the [wikiart dataset](https://drive.google.com/file/d/1vTChp3nU5GQeLkPwotrybpUGUXj12BTK/view) and [wikiart csv files](https://drive.google.com/file/d/1uug57zp13wJDwb2nuHOQfR2Odr0hh1a8/view) needs to be downloaded first. After the dataset is downloaded, generate the experiment data using the following command:
 ```bash
 python wikiart_preprocessing.py --wikiart_dir=your_wikiart_dir --exp_data_dir=your_exp_data_dir
 ```
