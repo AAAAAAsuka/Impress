@@ -5,3 +5,7 @@ datasets
 ftfy
 tensorboard
 Jinja2
+diffusers
+matplotlib
+lpips
+jsonlines
