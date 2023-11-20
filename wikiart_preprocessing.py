@@ -21,7 +21,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 parser = argparse.ArgumentParser(description='diffusion attack')
 
-parser.add_argument('--wikiart_dir', default="../wikiart/wikiart/", type=str,)
+parser.add_argument('--wikiart_dir', default="../wikiart/wikiart", type=str,)
 parser.add_argument('--exp_data_dir', default="../wikiart/preprocessed_data", type=str)
 args = parser.parse_args()
 
