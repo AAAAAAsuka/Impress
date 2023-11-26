@@ -46,7 +46,7 @@ artists4="albrecht-durer eugene-boudin"
 bash scripts/new/adv_pur.sh "${artists1}" ${device1} & bash scripts/new/adv_pur.sh "${artists2}" ${device2} & bash scripts/new/adv_pur.sh "${artists3}" ${device3} & bash scripts/new/adv_pur.sh "${artists4}" ${device4} & wait
  sleep 1m
 
- finetune SD model
+# finetune SD model
  for artist in $all_artists; do
      export OUTPUT_DIR="../stable_diffusion_models/${artist}/clean_${step}/"
      bash scripts/new/finetune_sd.sh "../wikiart/preprocessed_data/${artist}/clean/train/"
