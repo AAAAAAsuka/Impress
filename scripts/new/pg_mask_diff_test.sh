@@ -8,8 +8,8 @@ export pg_grad_reps=10
 export pg_eta=1
 # pur parameters
 export neg_feed=-1
-export pur_eps=0.15
-export pur_iters=75
+export pur_eps=0.1
+export pur_iters=1000
 export pur_lr=0.005
 export pur_alpha=0.01
 export pur_noise=0.05
