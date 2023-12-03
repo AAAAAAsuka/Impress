@@ -48,7 +48,6 @@ Below is the explanation of input hyperparameters:
 * ```glaze_iters```: The number of iterations to perform the Glaze method, default is 500.
 * ```glaze_lr```: The learning rate used in the Glaze method, default is 0.01.
 
-Photoguard to be completed.
 
 ### Execute Impress
 For data protected by Glaze, to use Impress to remove protective noise, execute the following code:
@@ -157,7 +156,7 @@ Below is an explanation of the input hyperparameters:
 * ```pg_iters```: Number of iterations to execute the Photoguard method, default is 200.
 
 ### Execute Impress
-For data protected by Glaze, to use Impress to remove protective noise, please execute the following code:
+For data protected by photoguard, to use Impress to remove protective noise, please execute the following code:
 ```bash
 python pg_mask_pur_helen.py \
         --attack_type=$attack_type \
