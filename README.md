@@ -219,7 +219,7 @@ In our experiments, we observed that the Glaze method we reproduced often requir
 ![glaze example 1](./fig/glaze_case1.png)
 ![glaze example 2](./fig/glaze_case2.png)
 
-We found that reducing the perturbation budget in the LPIPS loss term does not significantly lessen the alterations Glaze makes to the original image. This might be due to the fact that the perturbation budget in LPIPS is not a hard margin like $L_inf$. As a result, during multiple rounds of optimization, Glaze might overfit the LPIPS, leading to a LPIPS loss term value lower than the set perturbation budget, while the image content undergoes significant changes.
+We found that reducing the perturbation budget in the LPIPS loss term does not significantly lessen the alterations Glaze makes to the original image. This might be due to the fact that the perturbation budget in LPIPS is not a hard margin like $L_{inf}$. As a result, during multiple rounds of optimization, Glaze might overfit the LPIPS, leading to a LPIPS loss term value lower than the set perturbation budget, while the image content undergoes significant changes.
 
 It is important to note that the substantial modifications Glaze makes to clean images actually present a more challenging setting for us. This means that images protected by Glaze lose more original information and contain stronger protective noise. An extreme case would be if an image protected by Glaze becomes entirely different from the clean image (e.g., changing from a Monet painting to a Picasso painting), making it impossible to recover the clean image without prior knowledge.
 
