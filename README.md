@@ -44,7 +44,7 @@ python glaze_origin.py --clean_data_dir=[exp_data_dir]/${artist}/clean/train/ \
 ```
 Below is the explanation of input hyperparameters:
 * ```glaze_p```: Hyperparameter p in the Glaze method, can be seen as a perturbation budget, default is 0.05.
-* ```glaze_alpha```: Hyperparameter \( \alpha \) in the Glaze method, used to balance the two loss items, default is 30.
+* ```glaze_alpha```: Hyperparameter $\alpha$ in the Glaze method, used to balance the two loss items, default is 30.
 * ```glaze_iters```: The number of iterations to perform the Glaze method, default is 500.
 * ```glaze_lr```: The learning rate used in the Glaze method, default is 0.01.
 
@@ -67,7 +67,7 @@ Below is the explanation of input hyperparameters:
 * ```pur_eps```: Hyperparameter p in our Impress method, can be considered as a perturbation budget, default is 0.1.
 * ```pur_lr```: The learning rate used in our Impress method, default is 0.01.
 * ```pur_iters```: The number of iterations in our Impress method, default is 3000.
-* ```pur_alpha```: Hyperparameter \( \alpha \) in our Impress method, used to balance the two loss items, default is 0.1.
+* ```pur_alpha```: Hyperparameter $\alpha$ in our Impress method, used to balance the two loss items, default is 0.1.
 * ```pur_noise```: The intensity of the Gaussian noise initially added to the images in our Impress method, default is 0.1.
 * ```adv_para```: Hyperparameters used in executing Glaze, used for establishing storage directories. Format is ```"adv_p${glaze_p}_alpha${glaze_alpha}_iter${glaze_iters}_lr${glaze_lr}"```
 * ```pur_para```: Hyperparameters used in executing Impress, used for establishing storage directories. Format is ```"pur_eps${pur_eps}-iters${pur_iters}-lr${pur_lr}-pur_alpha${pur_alpha}-noise${pur_noise}"```
@@ -151,7 +151,7 @@ python pg_mask_diff_helen.py \
 ```
 Below is an explanation of the input hyperparameters:
 * ```attack_type```: The perturbation constraint method to be used in the Photoguard method, can be ```l2``` or ```linf```, default is ```l2```.
-* ```pg_eps```: The hyperparameter \( \epsilon \) in the Photoguard method, representing the maximum perturbation budget, default is 16.
+* ```pg_eps```: The hyperparameter $\epsilon$ in the Photoguard method, representing the maximum perturbation budget, default is 16.
 * ```pg_step_size```: Step size of pgd, default is 1.
 * ```pg_iters```: Number of iterations to execute the Photoguard method, default is 200.
 
@@ -173,7 +173,7 @@ Below is an explanation of the input hyperparameters:
 * ```pur_eps```: The hyperparameter p in our Impress method, which can be regarded as a perturbation budget, default is 0.1.
 * ```pur_lr```: The learning rate used in our Impress method, default is 0.005.
 * ```pur_iters```: The number of iterations of our Impress method, default is 1000.
-* ```pur_alpha```: The hyperparameter \( \alpha \) in our Impress method, used to balance two loss items, default is 0.01.
+* ```pur_alpha```: The hyperparameter $\alpha$ in our Impress method, used to balance two loss items, default is 0.01.
 * ```pur_noise```: The intensity of the Gaussian noise initially added to the image in our Impress method, default is 0.05.
 
 ```attack_type```, ```pg_eps```, ```pg_step_size```, and ```pg_iters``` have the same meanings as when adding protective noise.
@@ -209,6 +209,38 @@ python pg_metric.py \
         --prompt="${prompt}"
 ```
 The meanings of all hyperparameters remain the same as previously described.
+
+# Common Questions
+
+## Discussion on the Protection Effectiveness of Glaze
+
+In our experiments, we observed that the Glaze method we reproduced often requires substantial modifications to the clean image to achieve effective protection. Here are some examples:
+
+![glaze example 1](./fig/glaze_case1.png)
+![glaze example 2](./fig/glaze_case2.png)
+
+We found that reducing the perturbation budget in the LPIPS loss term does not significantly lessen the alterations Glaze makes to the original image. This might be due to the fact that the perturbation budget in LPIPS is not a hard margin like $L_inf$. As a result, during multiple rounds of optimization, Glaze might overfit the LPIPS, leading to a LPIPS loss term value lower than the set perturbation budget, while the image content undergoes significant changes.
+
+It is important to note that the substantial modifications Glaze makes to clean images actually present a more challenging setting for us. This means that images protected by Glaze lose more original information and contain stronger protective noise. An extreme case would be if an image protected by Glaze becomes entirely different from the clean image (e.g., changing from a Monet painting to a Picasso painting), making it impossible to recover the clean image without prior knowledge.
+
+## Fine-Tuning Settings
+
+In our experiments related to Glaze, we fully fine-tuned the Stable Diffusion model using clean images, protected images, and purified images. We observed that excessive fine-tuning rounds can lead to model overfitting, resulting in poor image generation quality. Here is an example(fine tune with clean image):
+
+![finetune example](./fig/ft_step.png)
+
+If you notice significantly poor image quality, consider reducing the number of fine-tuning steps.
+
+Additionally, it's crucial to maintain a batch size of 32 when fine-tuning the SD model. The actual batch size depends on the per-GPU batch size, gradient accumulation steps, and the number of GPUs used. For instance, in our experiment, we used 4 GPUs, with a per-GPU batch size of 8, and a gradient accumulation of 1, achieving an actual batch size of 4 * 8 * 1 = 32. If you use 2 GPUs with a per-GPU batch size of 8, you should adjust the gradient accumulation to 2 to keep a consistent actual batch size of 32 (2 * 8 * 2).
+
+# Ethical Statement
+
+We oppose the unauthorized imitation of others' works. Our concern stems from the possibility that image protection technologies might make it easier for individuals to post their artworks or personal photos online. However, if the protective noise on these artworks or photos can be easily removed, it could lead to malicious users more readily acquiring data, thereby exacerbating such abuses. We must confront this potential risk by researching possible removal methods to encourage the development of better protection technologies.
+
+# Acknowledgements
+
+We are grateful to the Glaze team for their communication and for reviewing our code.
+
 
 # Bibtex
 If these codes have been helpful to you, welcome to cite our paper! The bibtex of our paper is:
