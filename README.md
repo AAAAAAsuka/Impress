@@ -1,6 +1,11 @@
 # Impress
 This is the official repository for "[IMPRESS: Evaluating the Resilience of Imperceptible Perturbations Against Unauthorized Data Usage in Diffusion-Based  Generative AI](https://arxiv.org/abs/2310.19248)", the paper has been accepted by NeurIPS 2023
 
+## Ethical Statement
+
+We oppose the unauthorized imitation of others' works. Our concern stems from the possibility that image protection technologies might make it easier for individuals to post their artworks or personal photos online. However, if the protective noise on these artworks or photos can be easily removed, it could lead to malicious users more readily acquiring data, thereby exacerbating such abuses. We must confront this potential risk by researching possible removal methods to encourage the development of better protection technologies.
+
+
 ## Environment Setup
 First, our code requires the environment listed in ```requirements.txt``` to be installed:
 ```bash
@@ -232,10 +237,6 @@ In our experiments related to Glaze, we fully fine-tuned the Stable Diffusion mo
 If you notice significantly poor image quality, consider reducing the number of fine-tuning steps.
 
 Additionally, it's crucial to maintain a batch size of 32 when fine-tuning the SD model. The actual batch size depends on the per-GPU batch size, gradient accumulation steps, and the number of GPUs used. For instance, in our experiment, we used 4 GPUs, with a per-GPU batch size of 8, and a gradient accumulation of 1, achieving an actual batch size of 4 * 8 * 1 = 32. If you use 2 GPUs with a per-GPU batch size of 8, you should adjust the gradient accumulation to 2 to keep a consistent actual batch size of 32 (2 * 8 * 2).
-
-# Ethical Statement
-
-We oppose the unauthorized imitation of others' works. Our concern stems from the possibility that image protection technologies might make it easier for individuals to post their artworks or personal photos online. However, if the protective noise on these artworks or photos can be easily removed, it could lead to malicious users more readily acquiring data, thereby exacerbating such abuses. We must confront this potential risk by researching possible removal methods to encourage the development of better protection technologies.
 
 # Acknowledgements
 
