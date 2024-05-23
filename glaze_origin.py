@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     # pgd Hyperparameters
     parser.add_argument('--p', default=0.05, type=float, help='pgd Hyperparameters')
-    parser.add_argument('--alpha', default=50, type=int, help='pgd Hyperparameters')
+    parser.add_argument('--alpha', default=30, type=int, help='pgd Hyperparameters')
     parser.add_argument('--glaze_iters', default=500, type=int, help='pgd Hyperparameters')
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate.')
 
